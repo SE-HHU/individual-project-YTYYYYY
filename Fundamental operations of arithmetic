@@ -1,0 +1,201 @@
+package 四则运算;
+
+public class Equation {
+
+	private int Num1;
+	private int Num2;
+	private String SI;
+	
+	public int getNum1() {
+		return Num1;
+	}
+	public void setNum1(int num1) {
+		Num1 = num1;
+	}
+	public int getNum2() {
+		return Num2;
+	}
+	public void setNum2(int num2) {
+		Num2 = num2;
+	}
+	public String getSI() {
+		return SI;
+	}
+	public void setSI(String sI) {
+		SI = sI;
+	}
+	
+	public Equation(int num1, int num2, String sI) {
+		super();
+		Num1 = num1;
+		Num2 = num2;
+		SI = sI;
+	}
+	
+	public Equation() {
+		super();
+	}
+	@Override
+	public String toString() {
+		return Num1+" "+SI+" "+Num2+" "+"=";
+	}
+	
+	public String ANSWER() {
+		if(SI.equals("+")) {
+			return String.valueOf(Num1+Num2);
+		}
+		else if(SI.equals("-")) {
+			return String.valueOf(Num1-Num2);
+		}
+		else if(SI.equals("×")) {
+			return String.valueOf(Num1*Num2);
+		}
+		else{
+//			return Num1%Num2==0?String.valueOf(Num1/Num2):String.valueOf(Num1/Num2)+"--"+String.valueOf(Num1%Num2);
+			return String.valueOf(Num1/Num2);
+		}
+	}
+}
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+public class QuaternionOperationDemo {
+
+	public static void main(String[] args) throws IOException{
+		// TODO 自动生成的方法存根
+		
+		Map<Integer, String> sign = new HashMap<Integer, String>();
+		sign.put(1, "+");
+		sign.put(2, "-");
+		sign.put(3, "×");
+		sign.put(4, "÷");
+		sign.put(5, "÷");
+		sign.put(6, "÷");
+		sign.put(7, "÷");
+		sign.put(8, "÷");
+		sign.put(9, "÷");
+		sign.put(10, "÷");
+		
+		Random r = new Random();
+		
+		//testDemo======================================
+//		System.out.println((r.nextInt(100)+1)%4);
+//		Equation QuestionDemo = new Equation(r.nextInt(100),r.nextInt(100),sign.get((r.nextInt(100))%4+1));
+//		System.out.println(QuestionDemo.toString());
+		//==============================================
+		
+		
+		//生成随机题目的时间
+		long start = System.currentTimeMillis();
+		//======================================
+		
+		
+		List<Equation> EquationList = new ArrayList<>();
+		int QuestionNum = 0;
+		while(QuestionNum!=300) {
+			Equation Question = new Equation();
+			Question.setNum1(r.nextInt(100)+1);
+			Question.setNum2(r.nextInt(100)+1);
+			Question.setSI(sign.get((r.nextInt(100)+1)%10+1));
+			//筛选==============
+			if(!Screen(Question)) {
+				continue;
+			}
+			//查重==============
+			if(!DuplicateChecking(EquationList, Question)) {
+				continue;
+			}
+			
+			//==================
+//			QuestionToFile(QuestionNum,Question,QuestionFile);
+//			AnswerToFile(QuestionNum, Question, AnswerFile);
+		
+			EquationList.add(Question);
+			QuestionNum++;
+		}
+		
+		//======================================
+		long end = System.currentTimeMillis();
+		System.out.println("共耗时:"+(end-start)+"ms");
+		//======================================		
+		
+		
+		File QuestionFile = new File("D:\\EquationText.txt");
+		File AnswerFile = new File("D:\\AnswerText.txt");
+		if(QuestionFile.exists() || AnswerFile.exists()) {
+			QuestionFile.delete();
+			AnswerFile.delete();
+		}
+		int order = 1;
+		for(Equation i:EquationList) {
+			QuestionToFile(order,i,QuestionFile);
+			AnswerToFile(order,i,AnswerFile);
+			order++;
+		}
+	}
+	
+
+	public static void QuestionToFile(int num,Equation q,File f) throws IOException {
+		if(!f.exists()) {
+			f.createNewFile();
+		}
+		
+		FileWriter fw = new FileWriter(f,true);
+		
+		fw.write(num+"、 "+q.toString()+"\r\n");
+		
+		fw.close();
+	}
+	
+	public static void AnswerToFile(int num,Equation q,File f) throws IOException{
+		if(!f.exists()) {
+			f.createNewFile();
+		}
+		
+		FileWriter fw = new FileWriter(f,true);
+		
+		fw.write(num+"、 "+q.ANSWER()+"\r\n");
+		
+		fw.close();
+	}
+	
+	public static boolean Screen(Equation q) {
+		boolean be = true;
+		if(q.getSI().equals("+")) {
+			//====================
+		}else if (q.getSI().equals("-")) {
+			if(q.getNum1()<q.getNum2()) {
+				be=false;
+			}
+		}else if(q.getSI().equals("×")){
+			if(q.getNum1()>10 && q.getNum2()>10) {
+				be=false;
+			}
+		}else if(q.getSI().equals("÷")) {
+			if(q.getNum2()==q.getNum1() || q.getNum2()==1 || q.getNum1()%q.getNum2()!=0) {
+				be=false;
+			}
+		}
+		
+		return be;
+	}
+
+	public static boolean DuplicateChecking(List<Equation> list,Equation q) {
+		boolean be = true;
+		for(Equation i:list) {
+			if(i.getNum1()==q.getNum1() && i.getNum2()==q.getNum2() && i.getSI().equals(q.getSI())) {
+				be=false;
+			}
+		}
+		
+		return be;
+	}
+}
+
